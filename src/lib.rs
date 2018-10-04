@@ -580,7 +580,7 @@ impl Parser {
 	 				aadj1.d = 1_f64;
 	 			} else if self.rv.word1() != 0 || self.rv.word0() & Bndry_mask != 0 {
 	 				if self.rv.word1() == Tiny1 && self.rv.word0() == 0 {
-	 					self.rv.d == 0_f64;
+	 					self.rv.d = 0_f64;
 	 					return true;
 	 				}
 	 				
