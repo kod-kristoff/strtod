@@ -1,4 +1,6 @@
-# Github config and workflows
+# GitHub config and workflows
+
+Copied from <https://github.com/jonhoo/rust-ci-conf/>.
 
 Copied from <https://github.com/jonhoo/rust-ci-conf/>.
 
