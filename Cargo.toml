@@ -12,3 +12,4 @@ repository = "https://github.com/kod-kristoff/strtod"
 readme = "README.markdown"
 keywords = ["strtod", "parse", "parsing", "float", "f64"]
 license = "MIT/Apache-2.0"
+rust-version = "1.16.0"

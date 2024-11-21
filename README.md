@@ -30,7 +30,7 @@ Bugs should be reported through github at
 
 ## Minimum Supported Rust Version
 
-This library supports Rust version `1.37.0`.
+This library supports Rust version `1.16.0`. Every change of the MSRV is done with a minor version bump.
 
 ## License
 
