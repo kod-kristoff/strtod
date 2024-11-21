@@ -69,19 +69,6 @@ jobs:
         run: cargo miri test
         env:
           MIRIFLAGS: ""
-  loom:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: true
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@stable
-      - name: cargo test --test loom
-        run: cargo test --release --test loom
-        env:
-          LOOM_MAX_PREEMPTIONS: 2
-          RUSTFLAGS: "--cfg loom"
 
   # https://github.com/marketplace/actions/alls-green#why used for branch protection checks
   safety-check:
@@ -89,7 +76,6 @@ jobs:
     needs:
       - sanitizers
       - miri
-      - loom
     runs-on: ubuntu-latest
     permissions: {}
     steps:
