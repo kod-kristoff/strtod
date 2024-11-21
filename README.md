@@ -28,6 +28,10 @@ this, but this has been removed from this implementation.
 Bugs should be reported through github at
 [http://github.com/kod-kristoff/strtod/issues](http://github.com/kod-kristoff/strtod/issues).
 
+## Minimum Supported Rust Version
+
+This library supports Rust version `1.37.0`.
+
 ## License
 
 Licensed under either of
