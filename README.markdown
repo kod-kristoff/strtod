@@ -7,13 +7,15 @@ Apache 2.0 License.
 `strtod` is a floating point parsing implementation for Rust with very
 high precision, far better than the built in Rust floating point parser.
 
-The documentation can be found at http://pvginkel.github.io/strtod/strtod/.
+The documentation can be found at <http://pvginkel.github.io/strtod/strtod/>.
+
+This is a maintained fork of [`strtod`](https://github.com/pvginkel/strtod).
 
 ## Remarks
 
 The quality of the source is not really something to write home about.
 The reason for this is that this implementation is a verbatim translation
-from http://mxr.mozilla.org/mozilla-central/source/js/src/dtoa.c.
+from <http://mxr.mozilla.org/mozilla-central/source/js/src/dtoa.c>.
 That being said, the quality of the parser itself is very high.
 
 The performance of this implementation should be OK. However there is room
@@ -24,7 +26,7 @@ this, but this has been removed from this implementation.
 ## Bugs
 
 Bugs should be reported through github at
-[http://github.com/pvginkel/strtod/issues](http://github.com/pvginkel/strtod/issues).
+[http://github.com/kod-kristoff/strtod/issues](http://github.com/kod-kristoff/strtod/issues).
 
 ## License
 
