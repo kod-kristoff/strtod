@@ -6,9 +6,10 @@ authors = [
     "Kristoffer Andersson <kod.kristoff@gmail.com",
 ]
 description = "A high precision floating point parser implementation for Rust"
-documentation = "http://pvginkel.github.io/strtod/strtod/"
+documentation = "https://docs.rs/strtod"
 homepage = "https://github.com/kod-kristoff/strtod"
 repository = "https://github.com/kod-kristoff/strtod"
 readme = "README.markdown"
 keywords = ["strtod", "parse", "parsing", "float", "f64"]
-license = "MIT/Apache-2.0"
+license = "MIT OR Apache-2.0"
+rust-version = "1.16.0"

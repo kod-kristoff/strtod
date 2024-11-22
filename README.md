@@ -1,13 +1,13 @@
 # strtod for Rust
 
-Apache 2.0 License.
+[![License](https://img.shields.io/badge/license-MIT%2FApache--2.0-informational?style=flat-square)](COPYRIGHT.md)
 
 ## Introduction
 
 `strtod` is a floating point parsing implementation for Rust with very
 high precision, far better than the built in Rust floating point parser.
-
-The documentation can be found at <http://pvginkel.github.io/strtod/strtod/>.
+https://docs.rs/strtod
+The documentation can be found at <https://docs.rs/strtod>.
 
 This is a maintained fork of [`strtod`](https://github.com/pvginkel/strtod).
 
@@ -30,7 +30,7 @@ Bugs should be reported through github at
 
 ## Minimum Supported Rust Version
 
-This library supports Rust version `1.37.0`.
+This library supports Rust version `1.16.0`. Every change of the MSRV is done with a minor version bump.
 
 ## License
 
