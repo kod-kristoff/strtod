@@ -273,7 +273,7 @@ impl Parser {
                     c = s.peek();
 
                     while c >= C0 && c <= C9 {
-                        L = L * 10 + c - C0;
+                        L = u32::wrapping_sub(u32::wrapping_add(u32::wrapping_mul(L, 10), c), C0);
 
                         s.bump();
                         c = s.peek();
@@ -590,7 +590,7 @@ impl Parser {
                     aadj1.d = 1_f64;
                 } else if self.rv.word1() != 0 || self.rv.word0() & Bndry_mask != 0 {
                     if self.rv.word1() == Tiny1 && self.rv.word0() == 0 {
-                        self.rv.d == 0_f64;
+                        self.rv.d = 0_f64;
                         return true;
                     }
 
