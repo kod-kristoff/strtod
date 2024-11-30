@@ -13,3 +13,7 @@ readme = "README.md"
 keywords = ["strtod", "parse", "parsing", "float", "f64"]
 license = "MIT OR Apache-2.0"
 rust-version = "1.16.0"
+
+[workspace]
+resolver = "2"
+members = [".", "extras/data-tests"]
