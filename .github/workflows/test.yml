@@ -155,6 +155,29 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           env_vars: OS,RUST
 
+  data-tests:
+    runs-on: ubuntu-latest
+    name: ubuntu / ${{ matrix.toolchain }} / data-tests
+    strategy:
+      matrix:
+        # run on stable and beta to ensure that tests won't break on the next version of the rust
+        # toolchain
+        toolchain: [stable, beta, nightly]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Install ${{ matrix.toolchain }}
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.toolchain }}
+      - name: cargo generate-lockfile
+        # enable this ci template to run regardless of whether the lockfile is checked in or not
+        if: hashFiles('Cargo.lock') == ''
+        run: cargo generate-lockfile
+      - name: run data-tests
+        run: cd extras/data-tests && cargo run --release
+
   # https://github.com/marketplace/actions/alls-green#why used for branch protection checks
   test-check:
     if: always()
@@ -163,6 +186,7 @@ jobs:
       - minimal
       - os-check
       - coverage
+      - data-tests
     runs-on: ubuntu-latest
     permissions: {}
     steps:

@@ -1,0 +1,3 @@
+[submodule "extras/data-tests/ext"]
+	path = extras/data-tests/ext
+	url = https://github.com/lemire/fast_float_supplemental_tests
