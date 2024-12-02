@@ -1,0 +1,18 @@
+[package]
+name = "strtod-simple-bench"
+version = "0.1.0"
+authors = ["Ivan Smirnov <i.s.smirnov@gmail.com>"]
+edition = "2018"
+readme = "README.md"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies]
+strtod = { path = "../.." }
+fast-float2 = { git = "https://github.com/Alexhuszagh/fast-float-rust" }
+structopt = "0.3"
+anyhow = "1.0"
+lexical = "7.0.2"
+lexical-core = "1.0.2"
+fastrand = "2.1.1"
+fast-float = "0.2"
