@@ -16,4 +16,4 @@ rust-version = "1.16.0"
 
 [workspace]
 resolver = "2"
-members = [".", "extras/data-tests"]
+members = [".", "extras/data-tests", "extras/simple-bench"]
