@@ -1,3 +1,4 @@
+name: pr_fork_benchmarks_closed
 on:
   pull_request_target:
     types: [closed]

@@ -1,8 +1,8 @@
-name: Track Benchmarks with Bencher
+name: pr_fork_benchmarks
 
 on:
   workflow_run:
-    workflows: [Run Benchmarks]
+    workflows: [pr_fork_benchmarks_run]
     types: [completed]
 
 jobs:
@@ -46,7 +46,7 @@ jobs:
           --start-point-reset \
           --testbed ubuntu-latest \
           --err \
-          --adapter json \
+          --adapter rust_criterion \
           --github-actions '${{ secrets.GITHUB_TOKEN }}' \
           --ci-number "$PR_NUMBER" \
           --file "$BENCHMARK_RESULTS"
