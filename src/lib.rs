@@ -542,10 +542,8 @@ impl Parser {
                 }
 
                 delta = lshift(&delta, Log2P);
-                if cmp(&delta, &bs) > 0 {
-                    if self.drop_down(scale) {
-                        return true;
-                    }
+                if cmp(&delta, &bs) > 0 && self.drop_down(scale) {
+                    return true;
                 }
                 break;
             }
@@ -651,7 +649,7 @@ impl Parser {
                 if scale != 0 && y <= 2 * P * Exp_msk1 {
                     if aadj <= 0x7fffffff as f64 {
                         let mut z = aadj as u32;
-                        if z <= 0 {
+                        if z == 0 {
                             z = 1;
                         }
                         aadj = z as f64;
@@ -665,19 +663,17 @@ impl Parser {
             }
 
             let z = self.rv.word0() & Exp_mask;
-            if scale == 0 {
-                if y == z {
-                    // Can we stop now?
-                    let L = aadj as i32;
-                    aadj -= L as f64;
-                    // The tolerances below are conservative.
-                    if dsign || self.rv.word1() != 0 || self.rv.word0() & Bndry_mask != 0 {
-                        if aadj < 0.4999999_f64 || aadj > 0.5000001_f64 {
-                            break;
-                        }
-                    } else if aadj < 0.4999999_f64 / FLT_RADIX as f64 {
+            if scale == 0 && y == z {
+                // Can we stop now?
+                let L = aadj as i32;
+                aadj -= L as f64;
+                // The tolerances below are conservative.
+                if dsign || self.rv.word1() != 0 || self.rv.word0() & Bndry_mask != 0 {
+                    if !(0.4999999_f64..=0.5000001_f64).contains(&aadj) {
                         break;
                     }
+                } else if aadj < 0.4999999_f64 / FLT_RADIX as f64 {
+                    break;
                 }
             }
         }
@@ -701,7 +697,7 @@ impl Parser {
         // boundary case -- decrement exponent
         if scale != 0 {
             let L = self.rv.word0() & Exp_mask;
-            if L <= (2 * P + 1) & Exp_msk1 {
+            if L == (2 * P + 1) & Exp_msk1 {
                 if L > (P + 2) * Exp_msk1 {
                     // round even ==>
                     // accept rv
