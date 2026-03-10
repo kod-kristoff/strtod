@@ -121,8 +121,8 @@ jobs:
         uses: dtolnay/rust-toolchain@efa25f7f19611383d5b0ccf2d1c8914531636bf9 # master
         with:
           toolchain: ${{ matrix.msrv }}
-      - name: cargo +${{ matrix.msrv }} check
-        run: cargo check
+      - name: cargo +${{ matrix.msrv }} check --package strtod
+        run: cargo check --package strtod
 
   # https://github.com/marketplace/actions/alls-green#why used for branch protection checks
   check-check:
