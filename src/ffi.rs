@@ -9,8 +9,11 @@ use crate::strtod;
 ///
 /// If no floating point number can be built, it returns 0 and the len is -1.
 /// If a floating point number is returned, the len is the number of character used to build that number
+///
+/// # Safety
+/// The caller is responsible for that both pointers are valid and that the c_str is NULL terminated.
 #[no_mangle]
-pub extern "C" fn strtod_rs(c_str: *const c_char, c_len: *mut c_int) -> c_double {
+pub unsafe extern "C" fn strtod_rs(c_str: *const c_char, c_len: *mut c_int) -> c_double {
     let str_opt = unsafe { CStr::from_ptr(c_str).to_str().ok() };
 
     if let Some(str) = str_opt {
