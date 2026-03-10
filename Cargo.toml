@@ -13,4 +13,4 @@ keywords = ["f64", "float", "parse", "parsing", "strtod"]
 
 [workspace]
 # resolver = "2"
-members = [".", "extras/data-tests", "extras/simple-bench"]
+members = ["extras/data-tests", "extras/simple-bench"]
