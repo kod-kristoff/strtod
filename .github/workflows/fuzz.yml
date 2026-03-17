@@ -22,7 +22,7 @@ jobs:
         with:
           submodules: true
           persist-credentials: false
-      - name: Install stable
+      - name: Install nightly
         uses: dtolnay/rust-toolchain@efa25f7f19611383d5b0ccf2d1c8914531636bf9 # master
         with:
           components: llvm-tools-preview
@@ -30,7 +30,7 @@ jobs:
       - name: cargo install cargo-llvm-cov
         uses: taiki-e/install-action@0005e0116e92d8489d8d96fbff83f061c79ba95a # v2.62.31
         with:
-          tool: cargo-llvm-cov
+          tool: cargo-llvm-cov,rustfilt
       - run: cargo install cargo-fuzz
       - run: cargo check
       - name: cargo generate-lockfile
@@ -45,6 +45,22 @@ jobs:
       - name: Record Rust version
         run: echo "RUST=$(rustc --version)" >> "$GITHUB_ENV"
       # Upload fuzzing artifacts on failure for post-mortem debugging.
+      - name: Fuzz codecov
+        run: |
+          cargo +nightly fuzz coverage --release  ${{matrix.fuzz-target}}
+          $(rustc --print sysroot)/lib/rustlib/$(rustc --print host-tuple)/bin/llvm-cov export -Xdemangler=rustfilt \
+              target/$(rustc --print host-tuple)/coverage/$(rustc --print host-tuple)/release/${{ matrix.fuzz-target }} \
+              -instr-profile=fuzz/coverage/${{ matrix.fuzz-target }}/coverage.profdata \
+              --format=lcov \
+              -ignore-filename-regex="\.cargo|\.rustup|fuzz_targets" > lcov.info
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+        with:
+          files: ./lcov.info
+          fail_ci_if_error: false
+          flags: ${{ matrix.flags }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          name: fuzz
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         if: failure()
         with:
