@@ -2,7 +2,7 @@
 name = "strtod"
 version = "0.2.0"
 edition = "2018"
-rust-version = "1.48.0"
+rust-version = "1.64.0"
 description = "A high precision floating point parser implementation for Rust"
 documentation = "https://docs.rs/strtod"
 readme = "README.md"
