@@ -9,13 +9,18 @@
 // Translated from
 // - http://mxr.mozilla.org/mozilla-central/source/js/src/dtoa.c
 
+#![no_std]
 #![allow(non_upper_case_globals)]
 #![allow(non_snake_case)]
 
+extern crate alloc;
+
 pub mod ffi;
 
-use std::mem::transmute;
-use std::num::Wrapping;
+use core::mem::transmute;
+use core::num::Wrapping;
+
+use alloc::vec::Vec;
 
 const DBL_DIG: u32 = 15;
 const DBL_MAX_10_EXP: i32 = 308;
@@ -1074,7 +1079,7 @@ fn pow5mult(mut b: BigInt, mut k: i32) -> BigInt {
 
 fn mult<'a>(mut a: &'a BigInt, mut b: &'a BigInt) -> BigInt {
     if a.x.len() < b.x.len() {
-        std::mem::swap(&mut a, &mut b);
+        core::mem::swap(&mut a, &mut b);
     }
 
     let wa = a.x.len();
@@ -1159,7 +1164,7 @@ fn diff<'a>(mut a: &'a BigInt, mut b: &'a BigInt) -> BigInt {
     }
 
     if i < 0 {
-        std::mem::swap(&mut a, &mut b);
+        core::mem::swap(&mut a, &mut b);
         i = 1;
     } else {
         i = 0;
@@ -1211,9 +1216,11 @@ mod test {
     #![allow(overflowing_literals)]
 
     use super::strtod;
-    use std::f64;
+    use core::f64;
 
     #[test]
+    #[allow(clippy::excessive_precision)]
+    #[allow(clippy::octal_escapes)]
     pub fn tests() {
         test("abc10a", None);
         test("10abc10a", Some((10.0, 2)));
@@ -1592,9 +1599,9 @@ mod test {
     fn test(input: &str, val: Option<(f64, usize)>) {
         let result = strtod(input);
         assert_eq!(result, val);
-        if result.is_some() {
+        if let Some(result) = result {
             assert_eq!(
-                result.unwrap().0.is_sign_positive(),
+                result.0.is_sign_positive(),
                 val.unwrap().0.is_sign_positive()
             );
         }
