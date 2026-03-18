@@ -1,11 +1,4 @@
-# This is the main CI workflow that runs the test suite on all pushes to main and all pull requests.
-# It runs the following jobs:
-# - required: runs the test suite on ubuntu with stable and beta rust toolchains
-# - minimal: runs the test suite with the minimal versions of the dependencies that satisfy the
-#   requirements of this crate, and its dependencies
-# - os-check: runs the test suite on mac and windows
-# - coverage: runs the test suite and collects coverage information
-# See check.yml for information about how the concurrency cancellation and workflow triggering works
+# This CI workflow runs fuzz test
 permissions:
   contents: read
 on:
@@ -17,45 +10,27 @@ concurrency:
   cancel-in-progress: true
 name: fuzz
 jobs:
-  coverage:
-    # use llvm-cov to build and collect coverage and outputs in a format that
-    # is compatible with codecov.io
-    #
-    # note that codecov as of v5 requires that CODECOV_TOKEN from
-    #
-    #   https://app.codecov.io/gh/<user or org>/<project>/settings
-    #
-    # is set in two places on your repo:
-    #
-    # - https://github.com/jonhoo/guardian/settings/secrets/actions
-    # - https://github.com/jonhoo/guardian/settings/secrets/dependabot
-    #
-    # (the former is needed for codecov uploads to work with Dependabot PRs)
-    #
-    # PRs coming from forks of your repo will not have access to the token, but
-    # for those, codecov allows uploading coverage reports without a token.
-    # it's all a little weird and inconvenient. see
-    #
-    #   https://github.com/codecov/feedback/issues/112
-    #
-    # for lots of more discussion
+  fuzz:
     runs-on: ubuntu-latest
-    name: ubuntu / nightly / ${{ matrix.fuzz-target }} / coverage
+    name: ubuntu / nightly / ${{ matrix.fuzz-target }} / fuzz
     strategy:
       fail-fast: false
       matrix:
         fuzz-target: [fuzz_target_1]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           submodules: true
-      - name: Install stable
-        uses: dtolnay/rust-toolchain@master
+          persist-credentials: false
+      - name: Install nightly
+        uses: dtolnay/rust-toolchain@efa25f7f19611383d5b0ccf2d1c8914531636bf9 # master
         with:
           components: llvm-tools-preview
           toolchain: nightly
       - name: cargo install cargo-llvm-cov
-        uses: taiki-e/install-action@cargo-llvm-cov
+        uses: taiki-e/install-action@0005e0116e92d8489d8d96fbff83f061c79ba95a # v2.62.31
+        with:
+          tool: cargo-llvm-cov,rustfilt
       - run: cargo install cargo-fuzz
       - run: cargo check
       - name: cargo generate-lockfile
@@ -69,3 +44,25 @@ jobs:
 
       - name: Record Rust version
         run: echo "RUST=$(rustc --version)" >> "$GITHUB_ENV"
+      # Upload fuzzing artifacts on failure for post-mortem debugging.
+      - name: Fuzz codecov
+        run: |
+          cargo +nightly fuzz coverage --release  ${{matrix.fuzz-target}}
+          $(rustc --print sysroot)/lib/rustlib/$(rustc --print host-tuple)/bin/llvm-cov export -Xdemangler=rustfilt \
+              target/$(rustc --print host-tuple)/coverage/$(rustc --print host-tuple)/release/${{ matrix.fuzz-target }} \
+              -instr-profile=fuzz/coverage/${{ matrix.fuzz-target }}/coverage.profdata \
+              --format=lcov \
+              -ignore-filename-regex="\.cargo|\.rustup|fuzz_targets" > lcov.info
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@eaaf4bedf32dbdc6b720b63067d99c4d77d6047d
+        with:
+          files: ./lcov.info
+          fail_ci_if_error: false
+          flags: ${{ matrix.flags }}
+          token: ${{ secrets.CODECOV_TOKEN }}
+          name: fuzz
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        if: failure()
+        with:
+          name: fuzzing-artifacts-${{ matrix.fuzz_target }}-${{ github.sha }}
+          path: fuzz/artifacts

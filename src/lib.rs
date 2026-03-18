@@ -158,7 +158,7 @@ impl Parser {
             s.bump();
         }
 
-        let start = s.clone();
+        let start = *s;
 
         if s.peek() == C0 {
             nz0 = 1;
@@ -173,7 +173,7 @@ impl Parser {
             }
         }
 
-        let mut s0 = s.clone();
+        let mut s0 = *s;
         let mut y = 0;
         let mut z = 0;
 
@@ -183,7 +183,7 @@ impl Parser {
 
         loop {
             c = s.peek();
-            if c < C0 || c > C9 {
+            if !(C0..=C9).contains(&c) {
                 break;
             }
 
@@ -211,13 +211,13 @@ impl Parser {
                 }
 
                 if c > C0 && c <= C9 {
-                    s0 = s.clone();
+                    s0 = *s;
                     nf += nz;
                     nz = 0;
                 }
             }
 
-            while c >= C0 && c <= C9 {
+            while (C0..=C9).contains(&c) {
                 nz += 1;
 
                 if c > C0 {
@@ -268,7 +268,7 @@ impl Parser {
                 _ => {}
             }
 
-            if c >= C0 && c <= C9 {
+            if (C0..=C9).contains(&c) {
                 while c == C0 {
                     s.bump();
                     c = s.peek();
@@ -276,12 +276,12 @@ impl Parser {
 
                 if c > C0 && c <= C9 {
                     let mut L = c - C0;
-                    let s1 = s.clone();
+                    let s1 = *s;
 
                     s.bump();
                     c = s.peek();
 
-                    while c >= C0 && c <= C9 {
+                    while (C0..=C9).contains(&c) {
                         L = u32::wrapping_sub(u32::wrapping_add(u32::wrapping_mul(L, 10), c), C0);
 
                         s.bump();
@@ -542,10 +542,8 @@ impl Parser {
                 }
 
                 delta = lshift(&delta, Log2P);
-                if cmp(&delta, &bs) > 0 {
-                    if self.drop_down(scale) {
-                        return true;
-                    }
+                if cmp(&delta, &bs) > 0 && self.drop_down(scale) {
+                    return true;
                 }
                 break;
             }
@@ -556,7 +554,7 @@ impl Parser {
                         let y = self.rv.word0() & Exp_mask;
                         if self.rv.word1()
                             == (if scale != 0 && y <= 2 * P * Exp_msk1 {
-                                0xffffffff & (0xffffffff << (2 * P + 1 - (y >> Exp_shift)))
+                                0xffffffff << (2 * P + 1 - (y >> Exp_shift))
                             } else {
                                 0xffffffff
                             })
@@ -651,7 +649,7 @@ impl Parser {
                 if scale != 0 && y <= 2 * P * Exp_msk1 {
                     if aadj <= 0x7fffffff as f64 {
                         let mut z = aadj as u32;
-                        if z <= 0 {
+                        if z == 0 {
                             z = 1;
                         }
                         aadj = z as f64;
@@ -665,19 +663,17 @@ impl Parser {
             }
 
             let z = self.rv.word0() & Exp_mask;
-            if scale == 0 {
-                if y == z {
-                    // Can we stop now?
-                    let L = aadj as i32;
-                    aadj -= L as f64;
-                    // The tolerances below are conservative.
-                    if dsign || self.rv.word1() != 0 || self.rv.word0() & Bndry_mask != 0 {
-                        if aadj < 0.4999999_f64 || aadj > 0.5000001_f64 {
-                            break;
-                        }
-                    } else if aadj < 0.4999999_f64 / FLT_RADIX as f64 {
+            if scale == 0 && y == z {
+                // Can we stop now?
+                let L = aadj as i32;
+                aadj -= L as f64;
+                // The tolerances below are conservative.
+                if dsign || self.rv.word1() != 0 || self.rv.word0() & Bndry_mask != 0 {
+                    if !(0.4999999_f64..=0.5000001_f64).contains(&aadj) {
                         break;
                     }
+                } else if aadj < 0.4999999_f64 / FLT_RADIX as f64 {
+                    break;
                 }
             }
         }
@@ -701,7 +697,7 @@ impl Parser {
         // boundary case -- decrement exponent
         if scale != 0 {
             let L = self.rv.word0() & Exp_mask;
-            if L <= (2 * P + 1) & Exp_msk1 {
+            if L == (2 * P + 1) & Exp_msk1 {
                 if L > (P + 2) * Exp_msk1 {
                     // round even ==>
                     // accept rv
@@ -729,7 +725,7 @@ struct U {
 
 impl U {
     fn word0(&self) -> u32 {
-        let words = unsafe { transmute::<_, [u32; 2]>(self.d) };
+        let words = unsafe { transmute::<f64, [u32; 2]>(self.d) };
 
         if cfg!(target_endian = "little") {
             words[1]
@@ -739,7 +735,7 @@ impl U {
     }
 
     fn set_word0(&mut self, word: u32) {
-        let mut words = unsafe { transmute::<_, [u32; 2]>(self.d) };
+        let mut words = unsafe { transmute::<f64, [u32; 2]>(self.d) };
 
         if cfg!(target_endian = "little") {
             words[1] = word;
@@ -747,11 +743,11 @@ impl U {
             words[0] = word;
         }
 
-        self.d = unsafe { transmute(words) };
+        self.d = unsafe { transmute::<[u32; 2], f64>(words) };
     }
 
     fn word1(&self) -> u32 {
-        let words = unsafe { transmute::<_, [u32; 2]>(self.d) };
+        let words = unsafe { transmute::<f64, [u32; 2]>(self.d) };
 
         if cfg!(target_endian = "little") {
             words[0]
@@ -761,7 +757,7 @@ impl U {
     }
 
     fn set_word1(&mut self, word: u32) {
-        let mut words = unsafe { transmute::<_, [u32; 2]>(self.d) };
+        let mut words = unsafe { transmute::<f64, [u32; 2]>(self.d) };
 
         if cfg!(target_endian = "little") {
             words[0] = word;
@@ -769,7 +765,7 @@ impl U {
             words[1] = word;
         }
 
-        self.d = unsafe { transmute(words) };
+        self.d = unsafe { transmute::<[u32; 2], f64>(words) };
     }
 }
 
@@ -897,7 +893,7 @@ fn hi0bits(mut x: u32) -> u32 {
             return 32;
         }
     }
-    return k;
+    k
 }
 
 fn s2b(s: &mut Chars, nd0: u32, nd: u32, y9: u32) -> BigInt {
@@ -943,11 +939,11 @@ fn multadd(b: &mut BigInt, m: i32, a: u32) {
     for x in 0..b.x.len() {
         let y = b.x[x] as u64 * m as u64 + carry as u64;
         carry = (y >> 32) as u32;
-        b.x[x] = y as u32 & 0xffffffff;
+        b.x[x] = y as u32;
     }
 
     if carry != 0 {
-        b.x.push(carry as u32);
+        b.x.push(carry);
     }
 }
 
@@ -1078,9 +1074,7 @@ fn pow5mult(mut b: BigInt, mut k: i32) -> BigInt {
 
 fn mult<'a>(mut a: &'a BigInt, mut b: &'a BigInt) -> BigInt {
     if a.x.len() < b.x.len() {
-        let c = a;
-        a = b;
-        b = c;
+        std::mem::swap(&mut a, &mut b);
     }
 
     let wa = a.x.len();
@@ -1108,7 +1102,7 @@ fn mult<'a>(mut a: &'a BigInt, mut b: &'a BigInt) -> BigInt {
                 let z = a.x[x] as u64 * y as u64 + c.x[xc] as u64 + carry;
                 x += 1;
                 carry = z >> 32;
-                c.x[xc] = z as u32 & 0xffffffff;
+                c.x[xc] = z as u32;
                 xc += 1;
 
                 if x >= xae {
@@ -1165,9 +1159,7 @@ fn diff<'a>(mut a: &'a BigInt, mut b: &'a BigInt) -> BigInt {
     }
 
     if i < 0 {
-        let c = a;
-        a = b;
-        b = c;
+        std::mem::swap(&mut a, &mut b);
         i = 1;
     } else {
         i = 0;
@@ -1189,7 +1181,7 @@ fn diff<'a>(mut a: &'a BigInt, mut b: &'a BigInt) -> BigInt {
     for xa in xa..a.x.len() {
         let y = Wrapping(a.x[xa] as u64) - Wrapping(borrow as u64);
         borrow = (y.0 >> 32) as u32 & 1;
-        c.x.push(y.0 as u32 & 0xffffffff);
+        c.x.push(y.0 as u32);
     }
 
     c.trim();
