@@ -5,6 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [unreleased]
+
+### Fixed
+
+- Mark ffi::strtod_rs as unsafe by [@kod-kristoff](https://github.com/kod-kristoff)
+
+### Internal
+
+- Add bencher/criterion benchmark by [@kod-kristoff](https://github.com/kod-kristoff) in [#11](https://github.com/kod-kristoff/strtod/pull/11)
+- Add data-tests crate from fast-float-rust to test strtod by [@kod-kristoff](https://github.com/kod-kristoff)
+
+### Removed
+
+- Remove . from workspace.members by [@kod-kristoff](https://github.com/kod-kristoff)
+- Remove benchmark workflows by [@kod-kristoff](https://github.com/kod-kristoff)
+- Remove cooldown for pre-commit by [@kod-kristoff](https://github.com/kod-kristoff)
+- Remove deprecated package.authors key by [@kod-kristoff](https://github.com/kod-kristoff)
+
+### New Contributors
+
+- @dependabot[bot] made their first contribution
+- @fdubois1 made their first contribution
+
 ## [0.1.0] - 2024-11-22
 
 ### Documentation
@@ -17,11 +40,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - After fmt by [@kod-kristoff](https://github.com/kod-kristoff)
 - New maintainer @kod-kristoff and new repo <https://github.com/kod-kristoff/strtod>
 
-
-
 ### New Contributors
-* @kod-kristoff made their first contribution in [#4](https://github.com/kod-kristoff/strtod/pull/4)
-* @AljoschaMeyer made their first contribution
+
+- @kod-kristoff made their first contribution in [#4](https://github.com/kod-kristoff/strtod/pull/4)
+- @AljoschaMeyer made their first contribution
 
 ## [0.0.1] - 2015-07-22
 
