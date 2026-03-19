@@ -30,10 +30,11 @@ Bugs should be reported through github at
 
 ## Minimum Supported Rust Version
 
-This library supports Rust version `1.48.0`. Every change of the MSRV is done with a minor version bump.
+This library supports Rust version `1.64.0`. Every change of the MSRV is done with a minor version bump.
 
 The following versions of this library supports Rust version as below:
 
+- `strtod v0.3`: Rust 1.64.0
 - `strtod v0.2`: Rust 1.48.0
 - `strtod v0.1`: Rust 1.16.0
 
@@ -41,8 +42,8 @@ The following versions of this library supports Rust version as below:
 
 Licensed under either of
 
- * Apache License, Version 2.0 ([LICENSE-APACHE](LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
- * MIT license ([LICENSE-MIT](LICENSE-MIT) or http://opensource.org/licenses/MIT)
+- Apache License, Version 2.0 ([LICENSE-APACHE](./LICENSE-APACHE) or http://www.apache.org/licenses/LICENSE-2.0)
+- MIT license ([LICENSE-MIT](./LICENSE-MIT) or http://opensource.org/licenses/MIT)
 
 at your option.
 
